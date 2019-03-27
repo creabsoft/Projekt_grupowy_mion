@@ -1,0 +1,1 @@
+# Repozytorium dla projektu grupowego
