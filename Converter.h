@@ -1,13 +1,14 @@
 #pragma once
 
+#include <iostream>
 #include <vector>
 #include <string>
 #include <filesystem>
 #include <fstream>
+#include <sstream>
+#include "SingleBlock.h"
 
 namespace fs = std::filesystem;
-
-const int MAX_NUMBER_OF_BLOCKS = 760;
 
 class Converter
 {
@@ -15,14 +16,9 @@ public:
 	Converter();
 	~Converter();
 
-	struct SingleBlock {
-		int time;
-		double before;
-		double after;
-	};
-
 	std::vector<std::string> loadPathToFilesFromDirectory(std::string pathToDirectory);
 	void convertToBinary(std::vector<std::string> pathToFiles);
+	void saveToFile(std::vector<SingleBlock> singleBlocks, std::string filename);
 
 };
 
@@ -44,18 +40,67 @@ std::vector<std::string> Converter::loadPathToFilesFromDirectory(std::string pat
 }
 
 void Converter::convertToBinary(std::vector<std::string> pathToFiles) {
-	SingleBlock singleBlock[MAX_NUMBER_OF_BLOCKS];
+	std::vector<SingleBlock> singleBlocks;
 
 	for (auto it : pathToFiles) {
+		SingleBlock temporaryBlock;
 		std::ifstream file;
 		file.open(it);
+
+		// building the filename
+		std::string filename = it.substr(it.find_last_of("/") + 1);
+		filename = filename.substr(0, filename.size() - 4).append(".bin");
+		
+		// helpful variables for iterating through file
 		std::string singleLine;
-		int i = 0;
+		int numOfBlock = 0;
+
+		long time;
+		float before, after;
 
 		do {
-			std::getline(file, singleLine);
-			singleBlock[i]
+			getline(file, singleLine);
 
-		} while(singleLine != "\n")
+			if (numOfBlock < MAX_NUMBER_OF_BLOCKS && singleLine != "") {
+				//  to separate the values from getline, used stringstream
+				std::stringstream stringToSeparate(singleLine);
+				stringToSeparate >> time >> before >> after;
+
+				// assigning to the struct the values from file
+				temporaryBlock.time[numOfBlock] = time;
+				temporaryBlock.before[numOfBlock] = before;
+				temporaryBlock.after[numOfBlock] = after;
+
+				numOfBlock++;
+			}
+			// if singleLine is empty, saving the block and clearing the variables to be ready for next block
+			else if (singleLine == "" && numOfBlock != 0) {
+				singleBlocks.push_back(temporaryBlock);
+				numOfBlock = 0;
+				temporaryBlock = SingleBlock();
+			}
+		} while (!file.eof());
+
+		// saving the block into the file
+		saveToFile(singleBlocks, filename);
+
+		// helpful to see how many blocks were in the file
+		std::cout << singleBlocks.size() << std::endl;
 	}
+}
+
+void Converter::saveToFile(std::vector<SingleBlock> singleBlocks, std::string filename) {
+	FILE * file;
+	errno_t err;
+	
+	if ((err = fopen_s(&file, filename.c_str(), "wb")) != 0) {
+		std::cout << "File wasn't opened!" << std::endl;
+	}
+	else {
+		for (SingleBlock singleBlock : singleBlocks) {
+			fwrite(&singleBlock, sizeof(SingleBlock), 1, file);
+		}
+	}
+
+	fclose(file);
 }
