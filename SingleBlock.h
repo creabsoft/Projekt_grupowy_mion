@@ -1,8 +1,8 @@
 #pragma once
-const int MAX_NUMBER_OF_BLOCKS = 760;
+#include <Vector>
 
 struct SingleBlock {
-	long time[MAX_NUMBER_OF_BLOCKS];
-	float before[MAX_NUMBER_OF_BLOCKS];
-	float after[MAX_NUMBER_OF_BLOCKS];
+	std::vector<long> time;
+	std::vector<long> before;
+	std::vector<long> after;
 };

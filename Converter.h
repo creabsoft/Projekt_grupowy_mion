@@ -10,6 +10,8 @@
 
 namespace fs = std::filesystem;
 
+const int MAX_BLOCKS_IN_STRUCTURE = 4;
+
 class Converter
 {
 public:
@@ -55,26 +57,29 @@ void Converter::convertToBinary(std::vector<std::string> pathToFiles) {
 		std::string singleLine;
 		int numOfBlock = 0;
 
-		long time;
-		float before, after;
+		long time, before, after;
+		int numberOfBlock = 1;
 
 		do {
 			getline(file, singleLine);
 
-			if (numOfBlock < MAX_NUMBER_OF_BLOCKS && singleLine != "") {
+			if (numberOfBlock <= MAX_BLOCKS_IN_STRUCTURE && singleLine != "") {
 				//  to separate the values from getline, used stringstream
 				std::stringstream stringToSeparate(singleLine);
 				stringToSeparate >> time >> before >> after;
 
 				// assigning to the struct the values from file
-				temporaryBlock.time[numOfBlock] = time;
-				temporaryBlock.before[numOfBlock] = before;
-				temporaryBlock.after[numOfBlock] = after;
-
-				numOfBlock++;
+				temporaryBlock.time.push_back(time);
+				temporaryBlock.before.push_back(before);
+				temporaryBlock.after.push_back(after);
 			}
 			// if singleLine is empty, saving the block and clearing the variables to be ready for next block
-			else if (singleLine == "" && numOfBlock != 0) {
+			else if (singleLine == "") {
+				numberOfBlock++;
+
+				if (numberOfBlock == MAX_BLOCKS_IN_STRUCTURE) {
+					numberOfBlock = 0;
+				}
 				singleBlocks.push_back(temporaryBlock);
 				numOfBlock = 0;
 				temporaryBlock = SingleBlock();
