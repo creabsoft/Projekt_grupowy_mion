@@ -10,8 +10,6 @@
 
 namespace fs = std::filesystem;
 
-const int MAX_BLOCKS_IN_STRUCTURE = 4;
-
 class Converter
 {
 public:
@@ -21,6 +19,7 @@ public:
 	std::vector<std::string> loadPathToFilesFromDirectory(std::string pathToDirectory);
 	void convertToBinary(std::vector<std::string> pathToFiles);
 	void saveToFile(std::vector<SingleBlock> singleBlocks, std::string filename);
+	void optimizeBlocks(std::vector<SingleBlock> singleBlocks);
 
 };
 
@@ -57,40 +56,56 @@ void Converter::convertToBinary(std::vector<std::string> pathToFiles) {
 		std::string singleLine;
 		int numOfBlock = 0;
 
-		long time, before, after;
-		int numberOfBlock = 1;
+		long time;
+		float before, after;
+		int i = 0;
 
 		do {
 			getline(file, singleLine);
 
-			if (numberOfBlock <= MAX_BLOCKS_IN_STRUCTURE && singleLine != "") {
+			if (singleLine != "") {
 				//  to separate the values from getline, used stringstream
 				std::stringstream stringToSeparate(singleLine);
 				stringToSeparate >> time >> before >> after;
 
 				// assigning to the struct the values from file
-				temporaryBlock.time.push_back(time);
-				temporaryBlock.before.push_back(before);
-				temporaryBlock.after.push_back(after);
+				if (i < 3000) {
+					temporaryBlock.time[i] = time;
+					temporaryBlock.before[i] = before;
+					temporaryBlock.after[i] = after;
+					temporaryBlock.realSize++;
+				}
 			}
 			// if singleLine is empty, saving the block and clearing the variables to be ready for next block
 			else if (singleLine == "") {
-				numberOfBlock++;
-
-				if (numberOfBlock == MAX_BLOCKS_IN_STRUCTURE) {
-					numberOfBlock = 0;
-				}
 				singleBlocks.push_back(temporaryBlock);
-				numOfBlock = 0;
 				temporaryBlock = SingleBlock();
 			}
 		} while (!file.eof());
+
+		optimizeBlocks(singleBlocks);
 
 		// saving the block into the file
 		saveToFile(singleBlocks, filename);
 
 		// helpful to see how many blocks were in the file
-		std::cout << singleBlocks.size() << std::endl;
+		//std::cout << singleBlocks.size() << std::endl;
+	}
+}
+
+void Converter::optimizeBlocks(std::vector<SingleBlock> singleBlocks) {
+	int i = 0;
+	for (SingleBlock singleBlock : singleBlocks) {
+		if (singleBlock.realSize < 3000) {
+			SingleBlock withRealSize(singleBlock.realSize);
+			for (int i = 0; i < singleBlock.realSize; i++) {
+				withRealSize.time[i] = singleBlock.time[i];
+				withRealSize.before[i] = singleBlock.before[i];
+				withRealSize.after[i] = singleBlock.after[i];
+			}
+			singleBlocks.at(i) = withRealSize;
+		}
+		i++;
 	}
 }
 
@@ -109,3 +124,5 @@ void Converter::saveToFile(std::vector<SingleBlock> singleBlocks, std::string fi
 
 	fclose(file);
 }
+
+void 

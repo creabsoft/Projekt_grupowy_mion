@@ -1,11 +1,10 @@
 ﻿#include <iostream>
 #include "Converter.h"
-#include "Loader.h"
 
 int main()
 {
 	Converter converter;
-	Loader loader;
+	//Loader loader;
 	
 	//std::vector<std::string> filenames = loader.getFilenamesFromDirectory("test");
 
@@ -16,5 +15,7 @@ int main()
 	paths.push_back("test/1.txt");
 
 	converter.convertToBinary(paths);
-	loader.getBlocksFromFile("1.bin");
+	//loader.getBlocksFromFile("1.bin");
+
+	system("pause");
 }
