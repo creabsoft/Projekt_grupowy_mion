@@ -1,20 +1,18 @@
 ﻿#include <iostream>
 #include "Converter.h"
+#include "FilesHelper.h"
 
-int main()
-{
+int main() {
 	Converter converter;
 	//Loader loader;
 	
-	//std::vector<std::string> filenames = loader.getFilenamesFromDirectory("test");
+	std::vector<std::string> pathToFiles = FilesHelper::getPathToFilesFromDirectory("input");
 
-//	for (auto it : filenames) {
-	//	std::cout << it << std::endl;
-	//
-	std::vector<std::string> paths;
-	paths.push_back("test/1.txt");
+	for (auto it : pathToFiles) {
+		std::cout << it << std::endl;
 
-	converter.convertToBinary(paths);
+	}
+	converter.separateAndSaveChannels(pathToFiles);
 	//loader.getBlocksFromFile("1.bin");
 
 	system("pause");
