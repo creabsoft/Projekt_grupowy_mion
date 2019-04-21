@@ -10,13 +10,13 @@ const std::string BEFORE_DIR = "\\before\\";
 
 class MatlabHelper {
 public:
-	static void saveToMatlabFormat(std::vector<SingleBlock> singleBlocks, std::string filename);
+	static void saveToMatlabFormat(std::vector<SingleBlock> singleBlocks, std::string filename, std::string channel);
 
 };
 
-void MatlabHelper::saveToMatlabFormat(std::vector<SingleBlock> singleBlocks, std::string filename) {
-	std::ofstream outputBefore(MATLAB_DIR + BEFORE_DIR + filename + "_BEFORE.txt");
-	std::ofstream outputAfter(MATLAB_DIR + AFTER_DIR + filename + "_AFTER.txt");
+void MatlabHelper::saveToMatlabFormat(std::vector<SingleBlock> singleBlocks, std::string filename, std::string channel) {
+	std::ofstream outputBefore(MATLAB_DIR + channel + BEFORE_DIR + filename + "_BEFORE.txt");
+	std::ofstream outputAfter(MATLAB_DIR + channel + AFTER_DIR + filename + "_AFTER.txt");
 
 	std::cout << "Saving before & after for: " << filename << std::endl;
 

@@ -7,6 +7,7 @@
 #include <sstream>
 #include "SingleBlock.h"
 #include "MatlabHelper.h"
+#include "Loader.h"
 
 const std::string OUTPUT_BINARY = "binary\\";
 
@@ -18,6 +19,10 @@ public:
 
 	void separateAndSaveChannels(std::vector<std::string> pathToFiles);
 	void saveToFile(std::vector<SingleBlock> singleBlocks, std::string filename);
+	void convertBinaryToMatlab(std::vector<std::string> pathToFiles);
+
+private:
+	Loader loader;
 };
 
 Converter::Converter()
@@ -80,17 +85,17 @@ void Converter::separateAndSaveChannels(std::vector<std::string> pathToFiles) {
 		} while (!file.eof());
 
 		// saving the block into the file
-		//std::cout << "Saving into binary files in directory: " << OUTPUT_BINARY << std::endl;
-		////saveToFile(ch0, OUTPUT_BINARY + filename + "_ch0.bin");
-		////saveToFile(ch1, OUTPUT_BINARY + filename + "_ch1.bin");
-		////saveToFile(ch2, OUTPUT_BINARY + filename + "_ch2.bin");
-		//std::cout << "Finished saving into binaries. \n\n";
+		std::cout << "Saving into binary files in directory: " << OUTPUT_BINARY << std::endl;
+		saveToFile(ch0, OUTPUT_BINARY + filename + "_ch0.bin");
+		saveToFile(ch1, OUTPUT_BINARY + filename + "_ch1.bin");
+		saveToFile(ch2, OUTPUT_BINARY + filename + "_ch2.bin");
+		std::cout << "Finished saving into binaries. \n\n";
 
-		std::cout << "Saving into MatLab files. " << std::endl;
-		MatlabHelper::saveToMatlabFormat(ch0, filename + "_ch0");
-		MatlabHelper::saveToMatlabFormat(ch1, filename + "_ch1");
-		MatlabHelper::saveToMatlabFormat(ch2, filename + "_ch2");
-		std::cout << "Finished saving into MatLab files. \n\n";
+		//std::cout << "Saving into MatLab files. " << std::endl;
+		//MatlabHelper::saveToMatlabFormat(ch0, filename + "_ch0", "ch0");
+		//MatlabHelper::saveToMatlabFormat(ch1, filename + "_ch1", "ch1");
+		//MatlabHelper::saveToMatlabFormat(ch2, filename + "_ch2", "ch2");
+		//std::cout << "Finished saving into MatLab files. \n\n";
 	}
 }
 
@@ -106,5 +111,16 @@ void Converter::saveToFile(std::vector<SingleBlock> singleBlocks, std::string fi
 			fwrite(&singleBlock, sizeof(SingleBlock), 1, file);
 		}
 		fclose(file);
+	}
+}
+
+void Converter::convertBinaryToMatlab(std::vector<std::string> pathToFiles) {
+	for (auto it : pathToFiles) {
+		std::vector<SingleBlock> channel = loader.getBlocksFromFile(it);
+
+		std::string filename = it.substr(it.find_last_of("\\") + 1);
+		filename = filename.substr(0, filename.size() - 4);
+		std::string channelName = filename.substr(filename.find_last_of("_") + 1);
+		MatlabHelper::saveToMatlabFormat(channel, filename, channelName);
 	}
 }
