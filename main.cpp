@@ -10,8 +10,8 @@ int main() {
 
 	for (auto it : pathToFiles) {
 		std::cout << it << std::endl;
-
 	}
+
 	converter.separateAndSaveChannels(pathToFiles);
 	//loader.getBlocksFromFile("1.bin");
 

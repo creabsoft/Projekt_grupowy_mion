@@ -154,9 +154,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Converter.h" />
+    <ClInclude Include="FilesHelper.h" />
     <ClInclude Include="Loader.h" />
+    <ClInclude Include="MatlabHelper.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="SingleBlock.h" />
+    <ClInclude Include="UserInterface.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />

@@ -9,7 +9,6 @@
 #include "MatlabHelper.h"
 
 const std::string OUTPUT_BINARY = "binary\\";
-const std::string OUTPUT_BEFORE_AFTER = "matlab\\";
 
 class Converter
 {
@@ -72,7 +71,7 @@ void Converter::separateAndSaveChannels(std::vector<std::string> pathToFiles) {
 			// if singleLine is empty, saving the block and clearing the variables to be ready for next block
 			else if (singleLine == "") {
 				if (counter == MAX_BLOCKS_IN_STRUCTURE) {
-					counter = 0;
+					counter = 1;
 				}
 				else {
 					counter++;
@@ -81,16 +80,16 @@ void Converter::separateAndSaveChannels(std::vector<std::string> pathToFiles) {
 		} while (!file.eof());
 
 		// saving the block into the file
-		std::cout << "Saving into binary files in directory: " << OUTPUT_BINARY << std::endl;
-		saveToFile(ch0, OUTPUT_BINARY + filename + "_ch0.bin");
-		saveToFile(ch1, OUTPUT_BINARY + filename + "_ch1.bin");
-		saveToFile(ch2, OUTPUT_BINARY + filename + "_ch2.bin");
-		std::cout << "Finished saving into binaries. \n\n";
+		//std::cout << "Saving into binary files in directory: " << OUTPUT_BINARY << std::endl;
+		////saveToFile(ch0, OUTPUT_BINARY + filename + "_ch0.bin");
+		////saveToFile(ch1, OUTPUT_BINARY + filename + "_ch1.bin");
+		////saveToFile(ch2, OUTPUT_BINARY + filename + "_ch2.bin");
+		//std::cout << "Finished saving into binaries. \n\n";
 
-		std::cout << "Saving into MatLab files in directory: " << OUTPUT_BEFORE_AFTER << std::endl;
-		MatlabHelper::saveToMatlabFormat(ch0, OUTPUT_BEFORE_AFTER + filename + "_ch0");
-		MatlabHelper::saveToMatlabFormat(ch1, OUTPUT_BEFORE_AFTER + filename + "_ch1");
-		MatlabHelper::saveToMatlabFormat(ch2, OUTPUT_BEFORE_AFTER + filename + "_ch2");
+		std::cout << "Saving into MatLab files. " << std::endl;
+		MatlabHelper::saveToMatlabFormat(ch0, filename + "_ch0");
+		MatlabHelper::saveToMatlabFormat(ch1, filename + "_ch1");
+		MatlabHelper::saveToMatlabFormat(ch2, filename + "_ch2");
 		std::cout << "Finished saving into MatLab files. \n\n";
 	}
 }
