@@ -154,6 +154,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Bessel.h" />
     <ClInclude Include="Converter.h" />
     <ClInclude Include="FilesHelper.h" />
     <ClInclude Include="Loader.h" />

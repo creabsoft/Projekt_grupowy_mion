@@ -4,6 +4,7 @@
 #include <iostream>
 #include <stdio.h>
 #include "SingleBlock.h"
+#include "Bessel.h"
 
 class Loader
 {
@@ -43,3 +44,5 @@ std::vector<SingleBlock> Loader::getBlocksFromFile(std::string filename) {
 
 	return blocksFromFile;
 }
+
+std::vector<
