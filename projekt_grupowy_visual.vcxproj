@@ -155,7 +155,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Bessel.h" />
+    <ClInclude Include="BesselHelper.h" />
     <ClInclude Include="Converter.h" />
+    <ClInclude Include="Damping.h" />
     <ClInclude Include="FilesHelper.h" />
     <ClInclude Include="Loader.h" />
     <ClInclude Include="MatlabHelper.h" />
@@ -164,6 +166,7 @@
     <ClInclude Include="UserInterface.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BesselHelper.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>

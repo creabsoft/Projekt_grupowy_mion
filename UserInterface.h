@@ -29,13 +29,15 @@ UserInterface::~UserInterface()
 
 int UserInterface::getUserChoice() {
 	std::cout << "********************************" << std::endl;
-	std::cout << "Prosze wybrac akcje programu:" << std::endl;
+	std::cout << "Please choose the program action:" << std::endl;
 	std::cout << "--------------------------------" << std::endl;
-	std::cout << "(1) Konwersja plikow tekstowych na binarne."<< std::endl;
-	std::cout << "(2) Konwersja plikow binarnych do Matlaba." << std::endl;
-	std::cout << "(0) Wyjscie z programu." << std::endl;
+	std::cout << "(1) Convert from txt to binary."<< std::endl;
+	std::cout << "(2) Convert from binary to Matlab." << std::endl;
+	std::cout << "(3) Calculating damping for the Bessel files." << std::endl;
+	std::cout << "(4) Convert binary files to categories." << std::endl;
+	std::cout << "(0) Exit the program." << std::endl;
 	std::cout << "-------------------------------" << std::endl;
-	std::cout << "Twoj wybor: ";
+	std::cout << "Your choice: ";
 
 	int userChoice = 0;
 	std::cin >> userChoice;
@@ -48,16 +50,31 @@ void UserInterface::runUserAction() {
 
 	while (exit != true) {
 		int userChoice = getUserChoice();
+		std::vector<std::string> pathToFiles;
 
 		switch (userChoice) {
 			case 1: {
-				std::vector<std::string> pathToFiles = FilesHelper::getPathToFilesFromDirectory("input");
+				pathToFiles = FilesHelper::getPathToFilesFromDirectory("input");
 				converter.separateAndSaveChannels(pathToFiles);
+				std::cout << "The conversion to binary has been finished. You can find binary files in binary directory." << std::endl;
 				break;
 			}
 			case 2: {
-				std::vector<std::string> pathToFiles = FilesHelper::getPathToFilesFromDirectory("binary");
+				pathToFiles = FilesHelper::getPathToFilesFromDirectory("binary");
 				converter.convertBinaryToMatlab(pathToFiles);
+				std::cout << "The conversion to Matlab has been finished. You can find files in matlab folder." << std::endl;
+				break;
+			}
+			case 3: {
+				pathToFiles = FilesHelper::getPathToFilesFromDirectory("bessel");
+				converter.convertBesselToDamping(pathToFiles);
+				std::cout << "The damping calculations has been finished. Results you can find here: dampings.txt" << std::endl;
+				break;
+			}
+			case 4: {
+				pathToFiles = FilesHelper::getPathToFilesFromDirectory("binary");
+				converter.convertFilesToCategories(pathToFiles);
+				std::cout << "Finished converting files into categories. You can find them in categories directory." << std::endl;
 				break;
 			}
 			case 0: {
