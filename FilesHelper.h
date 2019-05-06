@@ -51,11 +51,11 @@ bool FilesHelper::saveDampingToFile(Damping damping, std::string filename) {
 	}
 	else {
 		// return 1 to make information that something goes wrong
-		return 1;
+		return 0;
 	}
 
 	file.close();
-	return 0;
+	return 1;
 }
 
 bool FilesHelper::saveSingleBlocksToBinary(std::vector<SingleBlock> singleBlocks, std::string filename) {
@@ -65,8 +65,8 @@ bool FilesHelper::saveSingleBlocksToBinary(std::vector<SingleBlock> singleBlocks
 	if ((err = fopen_s(&file, filename.c_str(), "wb")) != 0) {
 		std::cout << "File wasn't opened!" << std::endl;
 		
-		// returns 1, because file wasn't opened!
-		return 1;
+		// returns 0, because file wasn't opened!
+		return 0;
 	}
 	else {
 		for (SingleBlock singleBlock : singleBlocks) {
@@ -75,6 +75,6 @@ bool FilesHelper::saveSingleBlocksToBinary(std::vector<SingleBlock> singleBlocks
 		fclose(file);
 	}
 
-	// returns 0 when everything works well
-	return 0;
+	// returns 1 when everything works well
+	return 1;
 }
