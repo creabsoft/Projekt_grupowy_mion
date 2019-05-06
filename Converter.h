@@ -34,6 +34,9 @@ Converter::Converter()
 	if (!fs::exists("input")) {
 		fs::create_directory("input");
 	}
+	if (!fs::exists("bessel")) {
+		fs::create_directory("bessel");
+	}
 }
 
 
