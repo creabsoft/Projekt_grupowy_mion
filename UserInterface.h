@@ -35,6 +35,7 @@ int UserInterface::getUserChoice() {
 	std::cout << "(2) Convert from binary to Matlab." << std::endl;
 	std::cout << "(3) Calculating damping for the Bessel files." << std::endl;
 	std::cout << "(4) Convert binary files to categories." << std::endl;
+	std::cout << "(5) Generate simple histograms." << std::endl;
 	std::cout << "(0) Exit the program." << std::endl;
 	std::cout << "-------------------------------" << std::endl;
 	std::cout << "Your choice: ";
@@ -75,6 +76,16 @@ void UserInterface::runUserAction() {
 				pathToFiles = FilesHelper::getPathToFilesFromDirectory("binary");
 				converter.convertFilesToCategories(pathToFiles);
 				std::cout << "Finished converting files into categories. You can find them in categories directory." << std::endl;
+				break;
+			}
+			case 5: {
+				std::cout << "From which file do you want histogram?" << std::endl;
+				std::string filename;
+				std::cin >> filename;
+
+				if (filename == "ch1_dampings.txt" || filename == "ch2_dampings.txt" || filename == "ch3_dampings.txt") {
+					converter.generateHistogram(filename);
+				}
 				break;
 			}
 			case 0: {

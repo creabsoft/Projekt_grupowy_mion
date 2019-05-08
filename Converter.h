@@ -10,6 +10,7 @@
 #include "Loader.h"
 #include "Bessel.h"
 #include "BesselHelper.h"
+#include "HistogramHelper.h"
 
 const std::string OUTPUT_BINARY = "binary\\";
 namespace fs = std::filesystem;
@@ -24,6 +25,7 @@ public:
 	void convertBinaryToMatlab(std::vector<std::string> pathToFiles);
 	void convertBesselToDamping(std::vector<std::string> pathToFiles);
 	void convertFilesToCategories(std::vector<std::string> pathToFiles);
+	void generateHistogram(std::string filename);
 
 private:
 	Loader loader;
@@ -35,7 +37,7 @@ Converter::Converter()
 		fs::create_directory("input");
 	}
 	if (!fs::exists("bessel")) {
-		fs::create_directory("bessel");
+		fs::create_directory("bessel"); 
 	}
 }
 
@@ -150,23 +152,55 @@ void Converter::convertBinaryToMatlab(std::vector<std::string> pathToFiles) {
 
 void Converter::convertBesselToDamping(std::vector<std::string> pathToFiles) {
 	int counter = 1;
-	std::ofstream file("dampings.txt");
-	if (file.is_open()) {
-		file.clear();
+	std::ofstream firstChannel("ch1_dampings.txt");
+	std::ofstream secondChannel("ch2_dampings.txt");
+	std::ofstream thirdChannel("ch3_dampings.txt");
+
+	if (firstChannel.is_open() && secondChannel.is_open() && thirdChannel.is_open()) {
+		firstChannel.clear();
+		secondChannel.clear();
+		thirdChannel.clear();
 	}
-	file.close();
+	firstChannel.close();
+	secondChannel.close();
+	thirdChannel.close();
+	
+	std::vector<Bessel> besselsFromFile;
+	Bessel maximumBessels;
+	Damping damping;
 
 	for (auto it : pathToFiles) {
 		std::cout << "File " << counter++ << " from " << pathToFiles.size() << std::endl;
-		std::vector<Bessel> besselsFromFile = loader.getBesselFromFile(it);
-		Bessel maximumBessels = BesselHelper::getMaximumBessel(besselsFromFile);
-		Damping damping = BesselHelper::calculateDampingFromBessel(maximumBessels);
-		bool isCorrect = FilesHelper::saveDampingToFile(damping, "dampings.txt");
+		besselsFromFile = loader.getBesselFromFile(it);
+		maximumBessels = BesselHelper::getMaximumBessel(besselsFromFile);
+		damping = BesselHelper::calculateDampingFromBessel(maximumBessels);
+		
+		bool isCorrect = FilesHelper::saveDampingToFile(damping, FilesHelper::getFileNameForDamping(it));
 		if (!isCorrect) {
 			std::cout << "There is an error while saving the damping into file!" << std::endl;
 		}
 		besselsFromFile.clear();
 	}
+}
+
+void Converter::generateHistogram(std::string filename) {
+	std::ifstream file(filename);
+
+	std::vector<Damping> dampings;
+
+	if (file.is_open()) {
+		while (!file.eof()) {
+			double six60MHz = 0.0;
+			double two80MHz = 0.0;
+
+			file >> six60MHz;
+			file >> two80MHz;
+			
+			dampings.push_back(Damping(six60MHz, two80MHz));
+		}
+	}
+
+	HistogramHelper::generateHistogram(dampings);
 }
 
 void Converter::convertFilesToCategories(std::vector<std::string> pathToFiles) {

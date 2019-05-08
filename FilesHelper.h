@@ -13,6 +13,7 @@ public:
 	static bool saveDampingToFile(Damping damping, std::string filename);
 	static bool saveSingleBlocksToBinary(std::vector<SingleBlock> singleBlocks, std::string filename);
 	static void splitFilenameByDelimiter(const std::string & filename, char delimiter, std::vector<std::string> & output);
+	static std::string getFileNameForDamping(std::string inputFilename);
 };
 
 std::vector<std::string> FilesHelper::getPathToFilesFromDirectory(std::string pathToDirectory) {
@@ -77,4 +78,24 @@ bool FilesHelper::saveSingleBlocksToBinary(std::vector<SingleBlock> singleBlocks
 
 	// returns 1 when everything works well
 	return 1;
+}
+
+std::string FilesHelper::getFileNameForDamping(std::string inputFilename) {
+	size_t found = inputFilename.find("ch1");
+	if (found != std::string::npos) {
+		return "ch1_dampings.txt";
+	}
+
+	found = inputFilename.find("ch2");
+	if (found != std::string::npos) {
+		return "ch2_dampings.txt";
+	}
+
+	found = inputFilename.find("ch3");
+	if (found != std::string::npos) {
+		return "ch3_dampings.txt";
+	}
+	else {
+		return "";
+	}
 }
