@@ -10,6 +10,7 @@
 #include "Loader.h"
 #include "Bessel.h"
 #include "BesselHelper.h"
+#include "Histogram.h"
 #include "HistogramHelper.h"
 
 const std::string OUTPUT_BINARY = "binary\\";
@@ -21,11 +22,11 @@ public:
 	Converter();
 	~Converter();
 
-	void separateAndSaveChannels(std::vector<std::string> pathToFiles);
+	void separateAndSaveChannels(std::vector<std::string> pathToFiles, std::string outputFolder);
 	void convertBinaryToMatlab(std::vector<std::string> pathToFiles);
 	void convertBesselToDamping(std::vector<std::string> pathToFiles);
 	void convertFilesToCategories(std::vector<std::string> pathToFiles);
-	void generateHistogram(std::string filename);
+	void generateHistogram(std::string filename, double rangeFrom, double rangeTo, int numOfCompartments);
 
 private:
 	Loader loader;
@@ -46,16 +47,16 @@ Converter::~Converter()
 {
 }
 
-void Converter::separateAndSaveChannels(std::vector<std::string> pathToFiles) {
+void Converter::separateAndSaveChannels(std::vector<std::string> pathToFiles, std::string outputFolder) {
 	int counter = 1;
 
 	// creating directory / removing old
-	if (fs::exists("binary")) {
-		fs::remove_all("binary");
-		fs::create_directory("binary");
+	if (fs::exists(outputFolder)) {
+		fs::remove_all(outputFolder);
+		fs::create_directory(outputFolder);
 	}
 	else {
-		fs::create_directory("binary");
+		fs::create_directory(outputFolder);
 	}
 
 	for (auto it : pathToFiles) {
@@ -183,7 +184,7 @@ void Converter::convertBesselToDamping(std::vector<std::string> pathToFiles) {
 	}
 }
 
-void Converter::generateHistogram(std::string filename) {
+void Converter::generateHistogram(std::string filename, double rangeFrom, double rangeTo, int numOfCompartments) {
 	std::ifstream file(filename);
 
 	std::vector<Damping> dampings;
@@ -200,7 +201,8 @@ void Converter::generateHistogram(std::string filename) {
 		}
 	}
 
-	HistogramHelper::generateHistogram(dampings);
+	Histogram histogram(dampings, rangeFrom, rangeTo, numOfCompartments);
+	histogram.generateSimpleHistograms();
 }
 
 void Converter::convertFilesToCategories(std::vector<std::string> pathToFiles) {
@@ -214,7 +216,6 @@ void Converter::convertFilesToCategories(std::vector<std::string> pathToFiles) {
 	fs::create_directory("categories\\angles");
 	fs::create_directory("categories\\enp");
 	fs::create_directory("categories\\init_point");
-	// std::stringstream sstr;
 
 	const int ANGLE_INDEX = 1;
 	const int ENP_INDEX = 2;
@@ -231,16 +232,12 @@ void Converter::convertFilesToCategories(std::vector<std::string> pathToFiles) {
 		std::ofstream angleFile("categories\\angles\\" + separatedFilename[ANGLE_INDEX], std::fstream::app);
 		std::ofstream enpFile("categories\\enp\\" + separatedFilename[ENP_INDEX], std::fstream::app);
 		std::ofstream initpointFile("categories\\init_point\\" + separatedFilename[INITPOINT_INDEX], std::fstream::app);
-		// while (file >> sstr.rdbuf());
 		for (SingleBlock singleBlock : blocksFromBinary) {
 			angleFile << singleBlock.time << " " << singleBlock.before << " " << singleBlock.after << std::endl;
 			enpFile << singleBlock.time << " " << singleBlock.before << " " << singleBlock.after << std::endl;
 			initpointFile << singleBlock.time << " " << singleBlock.before << " " << singleBlock.after << std::endl;
 		}
-		//angleFile << sstr.str();
-		//enpFile << sstr.str();
-		//initpointFile << sstr.str();
-		//sstr.clear();
+
 		angleFile << std::endl;
 		enpFile << std::endl;
 		initpointFile << std::endl;

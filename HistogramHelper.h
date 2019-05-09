@@ -3,62 +3,47 @@
 #include <vector>
 #include "Damping.h"
 #include "DampingHelper.h"
-#include "Histogram.h"
 
 class HistogramHelper {
 public:
-	static void generateHistogramsWithDynamicRange(int numOfCategory, std::vector<Damping> dampings);
-	static void generateHistogram(std::vector<Damping> dampings);
+	static std::vector<int> calculatePercentage(std::vector<int> counted, int total);
 };
 
-void HistogramHelper::generateHistogram(std::vector<Damping> dampings) {
-	double d = 0.1;
-
-	std::vector<int> histogramSix;
-	std::vector<int> histogramTwo;
-	histogramSix.reserve(10);
-	histogramTwo.reserve(10);
-	for (int i = 0; i < 10; i++) {
-		histogramSix.push_back(0);
-		histogramTwo.push_back(0);
+std::vector<int> HistogramHelper::calculatePercentage(std::vector<int> counted, int total) {
+	std::vector<double> calculated;
+	std::vector<int> indexesToAdd;
+	int totalPercentage = 0;
+	for (int i = 0; i < counted.size(); i++) {
+		double percent = (counted[i] / (double)total * 100);
+		totalPercentage += (int) percent;
+		calculated.push_back(percent);
+		indexesToAdd.push_back(i);
 	}
 
-	for (Damping damping : dampings) {
-		histogramSix[(int)(damping.six60MHz / d)]++;
-		histogramTwo[(int)(damping.two80MHz / d)]++;
+	for (int i = 0; i < calculated.size(); i++) {
+		double decimal = calculated[i] - (int)calculated[i];
+		for (int j = 0; j < calculated.size(); j++) {
+			double innerDecimal = calculated[j] - (int)calculated[j];
+			if (decimal < innerDecimal) {
+				std::swap(indexesToAdd[i], indexesToAdd[j]);
+			}
+		}
 	}
 
-	Histogram histogram(histogramSix, histogramTwo, dampings.size());
-	histogram.generateSimpleHistograms();
+	int divide = 100 - totalPercentage;
+	for (int i = 0; i < divide; i++) {
+		if (calculated[indexesToAdd[i]] == 0.0) {
+			calculated[indexesToAdd[0]]++;
+		}
+		else {
+			calculated[indexesToAdd[i]]++;
+		}
+	}
+
+	counted.clear();
+	for (int i = 0; i < calculated.size(); i++) {
+		counted.push_back(static_cast<int>(calculated[i]));
+	}
+
+	return counted;
 }
-
-void HistogramHelper::generateHistogramsWithDynamicRange(int numOfRange, std::vector<Damping> dampings) {
-	double sixRange = 0.0;
-	double twoRange = 0.0;
-	double maximumSix = DampingHelper::getMaximumSix60MHz(dampings);
-	double maximumTwo = DampingHelper::getMaximumTwo80MHz(dampings);
-	double minimumSix = DampingHelper::getMinimumSix60MHz(dampings);
-	double minimumTwo = DampingHelper::getMinimumTwo80MHz(dampings);
-	sixRange = maximumSix - minimumSix;
-	twoRange = maximumTwo - minimumTwo;
-	double dSix = sixRange / numOfRange;
-	double dTwo = twoRange / numOfRange;
-	std::vector<std::string> labelsSix;
-	std::vector<std::string> labelsTwo;
-
-	std::vector<int> histogramSix;
-	std::vector<int> histogramTwo;
-	histogramSix.reserve(numOfRange);
-	histogramTwo.reserve(numOfRange);
-	for (int i = 0; i < numOfRange; i++) {
-		//abelsSix.push_back(minimumSix);
-		histogramSix[i] = 0;
-		histogramTwo[i] = 0;
-	 }
-	
-	for (Damping damping : dampings) {
-		histogramSix[(int)(damping.six60MHz / dSix)]++;
-		histogramTwo[(int)(damping.two80MHz / dTwo)]++;
-	}
-}
-

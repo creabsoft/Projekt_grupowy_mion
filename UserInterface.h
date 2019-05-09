@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <stdlib.h>
+#include <algorithm>
+#include <string>
 #include "Converter.h"
 #include "FilesHelper.h"
 #include "SingleBlock.h"
@@ -55,7 +57,19 @@ void UserInterface::runUserAction() {
 
 		switch (userChoice) {
 			case 1: {
-				pathToFiles = FilesHelper::getPathToFilesFromDirectory("input");
+				std::string inputFolder;
+				std::cout << "Enter the name of folder for INPUT or press enter to get default (input): ";
+				std::cin >> inputFolder;
+
+				if (inputFolder == "") {
+					inputFolder = "input";
+				}
+
+				std::string outputFolder;
+				std::cout << "Enter the name of folder for OUTPUT or press enter to get default (binary): ";
+				std::cin >> outputFolder;
+
+				pathToFiles = FilesHelper::getPathToFilesFromDirectory(inputFolder);
 				converter.separateAndSaveChannels(pathToFiles);
 				std::cout << "The conversion to binary has been finished. You can find binary files in binary directory." << std::endl;
 				break;
@@ -82,9 +96,19 @@ void UserInterface::runUserAction() {
 				std::cout << "From which file do you want histogram?" << std::endl;
 				std::string filename;
 				std::cin >> filename;
+				
+				int option;
+				std::cout << "Please select type of histogram: " << std::endl;
+				std::cout << "(1) Range: 0.0 to 1.0, 10 compartments" << std::endl;
+				std::cout << "(2) Range: 0.5 to 1.0, 10 compartments" << std::endl;
+				std::cout << "Your choice: " << std::endl;
+				std::cin >> option;
 
-				if (filename == "ch1_dampings.txt" || filename == "ch2_dampings.txt" || filename == "ch3_dampings.txt") {
-					converter.generateHistogram(filename);
+				if (option == 1) {
+					converter.generateHistogram(filename, 0.0, 1.0, 10);
+				}
+				else if (option == 2) {
+					converter.generateHistogram(filename, 0.5, 1.0, 10);
 				}
 				break;
 			}
