@@ -4,19 +4,18 @@
 #include <fstream>
 #include "SingleBlock.h"
 
-const std::string MATLAB_DIR = "matlab\\";
 const std::string AFTER_DIR = "\\after\\";
 const std::string BEFORE_DIR = "\\before\\";
 
 class MatlabHelper {
 public:
-	static void saveToMatlabFormat(std::vector<SingleBlock> singleBlocks, std::string filename, std::string channel);
+	static void saveToMatlabFormat(std::vector<SingleBlock> singleBlocks, std::string filename, std::string channel, std::string matlabFolder);
 
 };
 
-void MatlabHelper::saveToMatlabFormat(std::vector<SingleBlock> singleBlocks, std::string filename, std::string channel) {
-	std::ofstream outputBefore(MATLAB_DIR + channel + BEFORE_DIR + filename + "_BEFORE.txt");
-	std::ofstream outputAfter(MATLAB_DIR + channel + AFTER_DIR + filename + "_AFTER.txt");
+void MatlabHelper::saveToMatlabFormat(std::vector<SingleBlock> singleBlocks, std::string filename, std::string channel, std::string matlabFolder) {
+	std::ofstream outputBefore(matlabFolder + "\\" + channel + BEFORE_DIR + filename + "_BEFORE.txt");
+	std::ofstream outputAfter(matlabFolder + "\\" + channel + AFTER_DIR + filename + "_AFTER.txt");
 
 	std::cout << "Saving before & after for: " << filename << std::endl;
 

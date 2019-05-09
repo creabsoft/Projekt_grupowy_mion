@@ -8,6 +8,7 @@
 #include "FilesHelper.h"
 #include "SingleBlock.h"
 
+
 class UserInterface
 {
 public:
@@ -57,26 +58,14 @@ void UserInterface::runUserAction() {
 
 		switch (userChoice) {
 			case 1: {
-				std::string inputFolder;
-				std::cout << "Enter the name of folder for INPUT or press enter to get default (input): ";
-				std::cin >> inputFolder;
-
-				if (inputFolder == "") {
-					inputFolder = "input";
-				}
-
-				std::string outputFolder;
-				std::cout << "Enter the name of folder for OUTPUT or press enter to get default (binary): ";
-				std::cin >> outputFolder;
-
-				pathToFiles = FilesHelper::getPathToFilesFromDirectory(inputFolder);
-				converter.separateAndSaveChannels(pathToFiles);
+				pathToFiles = FilesHelper::getPathToFilesFromDirectory("input");
+				converter.separateAndSaveChannels(pathToFiles, "binary");
 				std::cout << "The conversion to binary has been finished. You can find binary files in binary directory." << std::endl;
 				break;
 			}
 			case 2: {
 				pathToFiles = FilesHelper::getPathToFilesFromDirectory("binary");
-				converter.convertBinaryToMatlab(pathToFiles);
+				converter.convertBinaryToMatlab(pathToFiles, "matlab");
 				std::cout << "The conversion to Matlab has been finished. You can find files in matlab folder." << std::endl;
 				break;
 			}

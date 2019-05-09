@@ -13,7 +13,6 @@
 #include "Histogram.h"
 #include "HistogramHelper.h"
 
-const std::string OUTPUT_BINARY = "binary\\";
 namespace fs = std::filesystem;
 
 class Converter
@@ -23,7 +22,7 @@ public:
 	~Converter();
 
 	void separateAndSaveChannels(std::vector<std::string> pathToFiles, std::string outputFolder);
-	void convertBinaryToMatlab(std::vector<std::string> pathToFiles);
+	void convertBinaryToMatlab(std::vector<std::string> pathToFiles, std::string matlabFolder);
 	void convertBesselToDamping(std::vector<std::string> pathToFiles);
 	void convertFilesToCategories(std::vector<std::string> pathToFiles);
 	void generateHistogram(std::string filename, double rangeFrom, double rangeTo, int numOfCompartments);
@@ -110,10 +109,10 @@ void Converter::separateAndSaveChannels(std::vector<std::string> pathToFiles, st
 		} while (!file.eof());
 
 		// saving the block into the file
-		std::cout << "Saving into binary files in directory: " << OUTPUT_BINARY << std::endl;
-		bool first = FilesHelper::saveSingleBlocksToBinary(ch0, OUTPUT_BINARY + filename + "_ch0.bin");
-		bool second = FilesHelper::saveSingleBlocksToBinary(ch1, OUTPUT_BINARY + filename + "_ch1.bin");
-		bool third = FilesHelper::saveSingleBlocksToBinary(ch2, OUTPUT_BINARY + filename + "_ch2.bin");
+		std::cout << "Saving into binary files in directory: " << outputFolder << std::endl;
+		bool first = FilesHelper::saveSingleBlocksToBinary(ch0, outputFolder + "\\" + filename + "_ch0.bin");
+		bool second = FilesHelper::saveSingleBlocksToBinary(ch1, outputFolder + "\\" + filename + "_ch1.bin");
+		bool third = FilesHelper::saveSingleBlocksToBinary(ch2, outputFolder + "\\" + filename + "_ch2.bin");
 		if (first && second && third) {
 			std::cout << "Finished saving into file!" << std::endl;
 		}
@@ -123,23 +122,23 @@ void Converter::separateAndSaveChannels(std::vector<std::string> pathToFiles, st
 	}
 }
 
-void Converter::convertBinaryToMatlab(std::vector<std::string> pathToFiles) {
+void Converter::convertBinaryToMatlab(std::vector<std::string> pathToFiles, std::string matlabFolder) {
 	int counter = 1;
 
 	// creating new structure of directories to be sure that there is no any file
-	if (fs::exists("matlab")) {
-		fs::remove_all("matlab");
+	if (fs::exists(matlabFolder)) {
+		fs::remove_all(matlabFolder);
 	}
-	fs::create_directory("matlab");
-	fs::create_directory("matlab\\ch0");
-	fs::create_directory("matlab\\ch1");
-	fs::create_directory("matlab\\ch2");
-	fs::create_directory("matlab\\ch0\\after");
-	fs::create_directory("matlab\\ch1\\after");
-	fs::create_directory("matlab\\ch2\\after");
-	fs::create_directory("matlab\\ch0\\before");
-	fs::create_directory("matlab\\ch1\\before");
-	fs::create_directory("matlab\\ch2\\before");
+	fs::create_directory(matlabFolder);
+	fs::create_directory(matlabFolder + "\\ch0");
+	fs::create_directory(matlabFolder + "\\ch1");
+	fs::create_directory(matlabFolder + "\\ch2");
+	fs::create_directory(matlabFolder + "\\ch0\\after");
+	fs::create_directory(matlabFolder + "\\ch1\\after");
+	fs::create_directory(matlabFolder + "\\ch2\\after");
+	fs::create_directory(matlabFolder + "\\ch0\\before");
+	fs::create_directory(matlabFolder + "\\ch1\\before");
+	fs::create_directory(matlabFolder + "\\ch2\\before");
 
 	for (auto it : pathToFiles) {
 		std::cout << "Plik " << counter++ << " z " << pathToFiles.size() << std::endl;
@@ -147,7 +146,7 @@ void Converter::convertBinaryToMatlab(std::vector<std::string> pathToFiles) {
 		std::string filename = it.substr(it.find_last_of("\\") + 1);
 		filename = filename.substr(0, filename.size() - 4);
 		std::string channelName = filename.substr(filename.find_last_of("_") + 1);
-		MatlabHelper::saveToMatlabFormat(channel, filename, channelName);
+		MatlabHelper::saveToMatlabFormat(channel, filename, channelName, matlabFolder);
 	}
 }
 
@@ -200,9 +199,14 @@ void Converter::generateHistogram(std::string filename, double rangeFrom, double
 			dampings.push_back(Damping(six60MHz, two80MHz));
 		}
 	}
+	else {
+		std::cout << "Cannot create histogram! Problem with dampings." << std::endl;
+		return;
+	}
 
 	Histogram histogram(dampings, rangeFrom, rangeTo, numOfCompartments);
 	histogram.generateSimpleHistograms();
+	std::cout << "Successfully created histograms in files: histogramSix60MHz.txt and histogramTwo80MHz.txt" << std::endl;
 }
 
 void Converter::convertFilesToCategories(std::vector<std::string> pathToFiles) {
