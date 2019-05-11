@@ -6,7 +6,6 @@
 #include <filesystem>
 #include <sstream>
 #include "SingleBlock.h"
-#include "MatlabHelper.h"
 #include "Loader.h"
 #include "Bessel.h"
 #include "BesselHelper.h"
@@ -142,28 +141,20 @@ void Converter::convertBinaryToMatlab(std::vector<std::string> pathToFiles, std:
 
 	for (auto it : pathToFiles) {
 		std::cout << "Plik " << counter++ << " z " << pathToFiles.size() << std::endl;
-		std::vector<SingleBlock> channel = loader.getBlocksFromFile(it);
+		std::vector<SingleBlock> channel = loader.getBlocksFromBinaryFile(it);
 		std::string filename = it.substr(it.find_last_of("\\") + 1);
 		filename = filename.substr(0, filename.size() - 4);
 		std::string channelName = filename.substr(filename.find_last_of("_") + 1);
-		MatlabHelper::saveToMatlabFormat(channel, filename, channelName, matlabFolder);
+		FilesHelper::saveToMatlabFormat(channel, filename, channelName, matlabFolder);
 	}
 }
 
 void Converter::convertBesselToDamping(std::vector<std::string> pathToFiles) {
 	int counter = 1;
-	std::ofstream firstChannel("ch1_dampings.txt");
-	std::ofstream secondChannel("ch2_dampings.txt");
-	std::ofstream thirdChannel("ch3_dampings.txt");
-
-	if (firstChannel.is_open() && secondChannel.is_open() && thirdChannel.is_open()) {
-		firstChannel.clear();
-		secondChannel.clear();
-		thirdChannel.clear();
+	if (fs::exists("dampings")) {
+		fs::remove_all("dampings");
 	}
-	firstChannel.close();
-	secondChannel.close();
-	thirdChannel.close();
+	fs::create_directory("dampings");
 	
 	std::vector<Bessel> besselsFromFile;
 	Bessel maximumBessels;
@@ -175,9 +166,10 @@ void Converter::convertBesselToDamping(std::vector<std::string> pathToFiles) {
 		maximumBessels = BesselHelper::getMaximumBessel(besselsFromFile);
 		damping = BesselHelper::calculateDampingFromBessel(maximumBessels);
 		
-		bool isCorrect = FilesHelper::saveDampingToFile(damping, FilesHelper::getFileNameForDamping(it));
+		bool isCorrect = FilesHelper::saveDampingToFile(damping, FilesHelper::getFilenameForDamping(it));
 		if (!isCorrect) {
 			std::cout << "There is an error while saving the damping into file!" << std::endl;
+			return;
 		}
 		besselsFromFile.clear();
 	}
@@ -206,7 +198,8 @@ void Converter::generateHistogram(std::string filename, double rangeFrom, double
 
 	Histogram histogram(dampings, rangeFrom, rangeTo, numOfCompartments);
 	histogram.generateSimpleHistograms();
-	std::cout << "Successfully created histograms in files: histogramSix60MHz.txt and histogramTwo80MHz.txt" << std::endl;
+	std::cout << "Successfully created histograms in files: histogramSix60MHz.txt and histogramTwo80MHz.txt (directory histograms)" << std::endl;
+	std::cout << "The csv files you can find in the histograms folder." << std::endl;
 }
 
 void Converter::convertFilesToCategories(std::vector<std::string> pathToFiles) {
@@ -227,7 +220,7 @@ void Converter::convertFilesToCategories(std::vector<std::string> pathToFiles) {
 
 	for (auto it : pathToFiles) {
 		std::cout << "File " << counter++ << " from " << pathToFiles.size() << std::endl;
-		std::vector<SingleBlock> blocksFromBinary = loader.getBlocksFromFile(it);
+		std::vector<SingleBlock> blocksFromBinary = loader.getBlocksFromBinaryFile(it);
 		std::string filename = it.substr(it.find_last_of("\\") + 1);
 		std::vector<std::string> separatedFilename;
 		FilesHelper::splitFilenameByDelimiter(filename, '_', separatedFilename);

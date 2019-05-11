@@ -2,7 +2,6 @@
 
 #include <vector>
 #include "Damping.h"
-#include "DampingHelper.h"
 
 class HistogramHelper {
 public:

@@ -158,12 +158,10 @@
     <ClInclude Include="BesselHelper.h" />
     <ClInclude Include="Converter.h" />
     <ClInclude Include="Damping.h" />
-    <ClInclude Include="DampingHelper.h" />
     <ClInclude Include="FilesHelper.h" />
     <ClInclude Include="Histogram.h" />
     <ClInclude Include="HistogramHelper.h" />
     <ClInclude Include="Loader.h" />
-    <ClInclude Include="MatlabHelper.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="SingleBlock.h" />
     <ClInclude Include="UserInterface.h" />

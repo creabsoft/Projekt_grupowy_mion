@@ -30,9 +30,6 @@
     <ClInclude Include="FilesHelper.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="MatlabHelper.h">
-      <Filter>Pliki nagłówkowe</Filter>
-    </ClInclude>
     <ClInclude Include="UserInterface.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
@@ -46,9 +43,6 @@
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
     <ClInclude Include="HistogramHelper.h">
-      <Filter>Pliki nagłówkowe</Filter>
-    </ClInclude>
-    <ClInclude Include="DampingHelper.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
     <ClInclude Include="Histogram.h">

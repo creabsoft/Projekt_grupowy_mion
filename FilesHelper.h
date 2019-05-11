@@ -2,9 +2,12 @@
 #include <string>
 #include <vector>
 #include <filesystem>
+#include <fstream>
 #include "Damping.h"
 
 namespace fs = std::filesystem;
+const std::string AFTER_DIR = "\\after\\";
+const std::string BEFORE_DIR = "\\before\\";
 
 class FilesHelper {
 public:
@@ -13,7 +16,8 @@ public:
 	static bool saveDampingToFile(Damping damping, std::string filename);
 	static bool saveSingleBlocksToBinary(std::vector<SingleBlock> singleBlocks, std::string filename);
 	static void splitFilenameByDelimiter(const std::string & filename, char delimiter, std::vector<std::string> & output);
-	static std::string getFileNameForDamping(std::string inputFilename);
+	static void saveToMatlabFormat(std::vector<SingleBlock> singleBlocks, std::string filename, std::string channel, std::string matlabFolder);
+	static std::string getFilenameForDamping(std::string inputFilename);
 };
 
 std::vector<std::string> FilesHelper::getPathToFilesFromDirectory(std::string pathToDirectory) {
@@ -45,7 +49,7 @@ void FilesHelper::splitFilenameByDelimiter(const std::string & filename, char de
 }
 
 bool FilesHelper::saveDampingToFile(Damping damping, std::string filename) {
-	std::ofstream file(filename, std::fstream::app);
+	std::ofstream file("dampings\\" + filename, std::fstream::app);
 
 	if (file.is_open()) {
 		file << std::to_string(damping.six60MHz) << " " << std::to_string(damping.two80MHz) << std::endl;
@@ -80,7 +84,7 @@ bool FilesHelper::saveSingleBlocksToBinary(std::vector<SingleBlock> singleBlocks
 	return 1;
 }
 
-std::string FilesHelper::getFileNameForDamping(std::string inputFilename) {
+std::string FilesHelper::getFilenameForDamping(std::string inputFilename) {
 	size_t found = inputFilename.find("ch1");
 	if (found != std::string::npos) {
 		return "ch1_dampings.txt";
@@ -98,4 +102,26 @@ std::string FilesHelper::getFileNameForDamping(std::string inputFilename) {
 	else {
 		return "";
 	}
+}
+
+void FilesHelper::saveToMatlabFormat(std::vector<SingleBlock> singleBlocks, std::string filename, std::string channel, std::string matlabFolder) {
+	std::ofstream outputBefore(matlabFolder + "\\" + channel + BEFORE_DIR + filename + "_BEFORE.txt");
+	std::ofstream outputAfter(matlabFolder + "\\" + channel + AFTER_DIR + filename + "_AFTER.txt");
+
+	std::cout << "Saving before & after for: " << filename << std::endl;
+
+	if (outputBefore.good() && outputAfter.good()) {
+		int i = 0;
+		for (i = 0; i < singleBlocks.size() - 1; i++) {
+			outputBefore << singleBlocks[i].before << " ";
+			outputAfter << singleBlocks[i].after << " ";
+		}
+		if (i < singleBlocks.size()) {
+			outputBefore << singleBlocks[i].before;
+			outputAfter << singleBlocks[i].after;
+		}
+	}
+
+	outputBefore.close();
+	outputAfter.close();
 }

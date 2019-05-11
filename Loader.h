@@ -13,7 +13,7 @@ public:
 	Loader();
 	~Loader();
 
-	std::vector<SingleBlock> getBlocksFromFile(std::string filename);
+	std::vector<SingleBlock> getBlocksFromBinaryFile(std::string filename);
 	std::vector<Bessel> getBesselFromFile(std::string filename);
 };
 
@@ -25,7 +25,7 @@ Loader::~Loader()
 {
 }
 
-std::vector<SingleBlock> Loader::getBlocksFromFile(std::string filename) {
+std::vector<SingleBlock> Loader::getBlocksFromBinaryFile(std::string filename) {
 	FILE * file;
 	errno_t err;
 	struct SingleBlock singleBlock;
@@ -37,7 +37,6 @@ std::vector<SingleBlock> Loader::getBlocksFromFile(std::string filename) {
 	else {
 		while (fread(&singleBlock, sizeof(SingleBlock), 1, file)) {
 			blocksFromFile.push_back(singleBlock);
-			//printf("%d %d %d\n", singleBlock.time[0], singleBlock.before[0], singleBlock.after[0]);
 			singleBlock = SingleBlock();
 		}
 		fclose(file);

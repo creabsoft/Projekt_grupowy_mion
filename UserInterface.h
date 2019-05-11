@@ -72,7 +72,7 @@ void UserInterface::runUserAction() {
 			case 3: {
 				pathToFiles = FilesHelper::getPathToFilesFromDirectory("bessel");
 				converter.convertBesselToDamping(pathToFiles);
-				std::cout << "The damping calculations has been finished. Results you can find here: dampings.txt" << std::endl;
+				std::cout << "The damping calculations has been finished. Results you can find in dampings directory." << std::endl;
 				break;
 			}
 			case 4: {
