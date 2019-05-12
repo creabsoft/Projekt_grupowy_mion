@@ -105,8 +105,8 @@ std::string FilesHelper::getFilenameForDamping(std::string inputFilename) {
 }
 
 void FilesHelper::saveToMatlabFormat(std::vector<SingleBlock> singleBlocks, std::string filename, std::string channel, std::string matlabFolder) {
-	std::ofstream outputBefore(matlabFolder + "\\" + channel + BEFORE_DIR + filename + "_BEFORE.txt");
-	std::ofstream outputAfter(matlabFolder + "\\" + channel + AFTER_DIR + filename + "_AFTER.txt");
+	std::ofstream outputBefore(matlabFolder + "\\" + channel + BEFORE_DIR + filename + "_BEFORE."+ channel + "_org");
+	std::ofstream outputAfter(matlabFolder + "\\" + channel + AFTER_DIR + filename + "_AFTER." + channel + "_org");
 
 	std::cout << "Saving before & after for: " << filename << std::endl;
 

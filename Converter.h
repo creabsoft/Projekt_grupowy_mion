@@ -58,7 +58,7 @@ void Converter::separateAndSaveChannels(std::vector<std::string> pathToFiles, st
 	}
 
 	for (auto it : pathToFiles) {
-		std::cout << "Plik " << counter++ << " z " << pathToFiles.size() << std::endl;
+		std::cout << "File " << counter++ << " from " << pathToFiles.size() << std::endl;
 		std::vector<SingleBlock> ch0;
 		std::vector<SingleBlock> ch1;
 		std::vector<SingleBlock> ch2;
@@ -140,7 +140,7 @@ void Converter::convertBinaryToMatlab(std::vector<std::string> pathToFiles, std:
 	fs::create_directory(matlabFolder + "\\ch2\\before");
 
 	for (auto it : pathToFiles) {
-		std::cout << "Plik " << counter++ << " z " << pathToFiles.size() << std::endl;
+		std::cout << "File " << counter++ << " from " << pathToFiles.size() << std::endl;
 		std::vector<SingleBlock> channel = loader.getBlocksFromBinaryFile(it);
 		std::string filename = it.substr(it.find_last_of("\\") + 1);
 		filename = filename.substr(0, filename.size() - 4);
@@ -211,7 +211,7 @@ void Converter::convertFilesToCategories(std::vector<std::string> pathToFiles) {
 
 	fs::create_directory("categories");
 	fs::create_directory("categories\\angles");
-	fs::create_directory("categories\\enp");
+	fs::create_directory("categories\\energy");
 	fs::create_directory("categories\\init_point");
 
 	const int ANGLE_INDEX = 1;
@@ -227,7 +227,7 @@ void Converter::convertFilesToCategories(std::vector<std::string> pathToFiles) {
 
 		std::ifstream file(it);
 		std::ofstream angleFile("categories\\angles\\" + separatedFilename[ANGLE_INDEX], std::fstream::app);
-		std::ofstream enpFile("categories\\enp\\" + separatedFilename[ENP_INDEX], std::fstream::app);
+		std::ofstream enpFile("categories\\energy\\" + separatedFilename[ENP_INDEX], std::fstream::app);
 		std::ofstream initpointFile("categories\\init_point\\" + separatedFilename[INITPOINT_INDEX], std::fstream::app);
 		for (SingleBlock singleBlock : blocksFromBinary) {
 			angleFile << singleBlock.time << " " << singleBlock.before << " " << singleBlock.after << std::endl;
