@@ -163,14 +163,16 @@ void Converter::convertBesselToDamping(std::vector<std::string> pathToFiles) {
 	for (auto it : pathToFiles) {
 		std::cout << "File " << counter++ << " from " << pathToFiles.size() << std::endl;
 		besselsFromFile = loader.getBesselFromFile(it);
-		maximumBessels = BesselHelper::getMaximumBessel(besselsFromFile);
-		damping = BesselHelper::calculateDampingFromBessel(maximumBessels);
+
+		BesselHelper::getDampingsFromBessels(besselsFromFile);
+//		maximumBessels = BesselHelper::getMaximumBessel(besselsFromFile);
+	//	damping = BesselHelper::calculateDampingFromBessel(maximumBessels);
 		
-		bool isCorrect = FilesHelper::saveDampingToFile(damping, FilesHelper::getFilenameForDamping(it));
-		if (!isCorrect) {
-			std::cout << "There is an error while saving the damping into file!" << std::endl;
-			return;
-		}
+		//bool isCorrect = FilesHelper::saveDampingToFile(damping, FilesHelper::getFilenameForDamping(it));
+		//if (!isCorrect) {
+			//std::cout << "There is an error while saving the damping into file!" << std::endl;
+			//return;
+		//}
 		besselsFromFile.clear();
 	}
 }
