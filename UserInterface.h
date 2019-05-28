@@ -71,7 +71,7 @@ void UserInterface::runUserAction() {
 			}
 			case 3: {
 				pathToFiles = FilesHelper::getPathToFilesFromDirectory("bessel");
-				converter.convertBesselToDamping(pathToFiles);
+				converter.convertBesselToDamping(pathToFiles, "mion.dat");
 				std::cout << "The damping calculations has been finished. Results you can find in dampings directory." << std::endl;
 				break;
 			}

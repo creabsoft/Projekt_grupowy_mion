@@ -1,9 +1,12 @@
 #pragma once
+#include <iostream>
 #include <string>
 #include <vector>
 #include <filesystem>
 #include <fstream>
 #include "Damping.h"
+#include "BesselName.h"
+#include "BesselNameHelper.h"
 
 namespace fs = std::filesystem;
 const std::string AFTER_DIR = "\\after\\";
@@ -18,6 +21,8 @@ public:
 	static void splitFilenameByDelimiter(const std::string & filename, char delimiter, std::vector<std::string> & output);
 	static void saveToMatlabFormat(std::vector<SingleBlock> singleBlocks, std::string filename, std::string channel, std::string matlabFolder);
 	static std::string getFilenameForDamping(std::string inputFilename);
+	static void renameBesselFiles(std::string besselFolder, std::string fileWithNames);
+	static std::vector<BesselName> getBesselsNamesFromFile(std::string filename);
 };
 
 std::vector<std::string> FilesHelper::getPathToFilesFromDirectory(std::string pathToDirectory) {
@@ -124,4 +129,39 @@ void FilesHelper::saveToMatlabFormat(std::vector<SingleBlock> singleBlocks, std:
 
 	outputBefore.close();
 	outputAfter.close();
+}
+
+//void FilesHelper::renameBesselFiles(std::string besselFolder, std::string fileWithNames) {
+//	std::vector<std::string> paths = FilesHelper::getPathToFilesFromDirectory(besselFolder);
+//	std::vector<BesselName> besselsNames = getBesselsNamesFromFile(fileWithNames);
+//	std::string lol;
+//
+//	for (auto it : paths) {
+//		std::string filename = it.substr(it.find_last_of("\\") + 1);
+//		std::string path = it.substr(0, it.find_last_of("\\") + 1);
+//		std::vector<std::string> separatedFilename;
+//		FilesHelper::splitFilenameByDelimiter(filename, '_', separatedFilename);
+//
+//		std::string newName = BesselNameHelper::getBesselNameForSelectedFile(besselsNames, separatedFilename[0]).newName;
+//		std::cout << newName << std::endl;
+//		std::cout << it << std::endl;
+//	}
+//}
+
+std::vector<BesselName> FilesHelper::getBesselsNamesFromFile(std::string filename) {
+	std::ifstream file(filename);
+	std::vector<BesselName> besselsNames;
+
+	if (file.is_open()) {
+		std::string oldName;
+		std::string newName;
+		while (!file.eof()) {
+			file >> oldName;
+			file >> newName;
+
+			besselsNames.push_back(BesselName(newName, oldName));
+		}
+	}
+
+	return besselsNames;
 }

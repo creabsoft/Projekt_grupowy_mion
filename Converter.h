@@ -22,7 +22,7 @@ public:
 
 	void separateAndSaveChannels(std::vector<std::string> pathToFiles, std::string outputFolder);
 	void convertBinaryToMatlab(std::vector<std::string> pathToFiles, std::string matlabFolder);
-	void convertBesselToDamping(std::vector<std::string> pathToFiles);
+	void convertBesselToDamping(std::vector<std::string> pathToFiles, std::string fileWithNames);
 	void convertFilesToCategories(std::vector<std::string> pathToFiles);
 	void generateHistogram(std::string filename, double rangeFrom, double rangeTo, int numOfCompartments);
 
@@ -149,31 +149,48 @@ void Converter::convertBinaryToMatlab(std::vector<std::string> pathToFiles, std:
 	}
 }
 
-void Converter::convertBesselToDamping(std::vector<std::string> pathToFiles) {
+void Converter::convertBesselToDamping(std::vector<std::string> pathToFiles, std::string fileWithNames) {
 	int counter = 1;
 	if (fs::exists("dampings")) {
 		fs::remove_all("dampings");
 	}
 	fs::create_directory("dampings");
+	fs::create_directory("dampings\\angle");
+	fs::create_directory("dampings\\energy");
+	fs::create_directory("dampings\\init_point");
 	
 	std::vector<Bessel> besselsFromFile;
 	Bessel maximumBessels;
 	Damping damping;
+	std::vector<BesselName> besselsNames = FilesHelper::getBesselsNamesFromFile(fileWithNames);
 
 	for (auto it : pathToFiles) {
 		std::cout << "File " << counter++ << " from " << pathToFiles.size() << std::endl;
 		besselsFromFile = loader.getBesselFromFile(it);
+		std::string filename = it.substr(it.find_last_of("\\") + 1);
+		std::vector<std::string> separatedFilename;
+		FilesHelper::splitFilenameByDelimiter(filename, '_', separatedFilename);
+		std::string newName = BesselNameHelper::getBesselNameForSelectedFile(besselsNames, separatedFilename[0]).newName;
+		separatedFilename.clear();
+		FilesHelper::splitFilenameByDelimiter(newName, '_', separatedFilename);
+		std::cout << "ANGLE: " << separatedFilename[2] << std::endl;
 
-		BesselHelper::getDampingsFromBessels(besselsFromFile);
-//		maximumBessels = BesselHelper::getMaximumBessel(besselsFromFile);
-	//	damping = BesselHelper::calculateDampingFromBessel(maximumBessels);
-		
-		//bool isCorrect = FilesHelper::saveDampingToFile(damping, FilesHelper::getFilenameForDamping(it));
-		//if (!isCorrect) {
-			//std::cout << "There is an error while saving the damping into file!" << std::endl;
-			//return;
-		//}
+		std::ofstream angleFile("dampings\\angle\\" + separatedFilename[2], std::fstream::app);
+		std::ofstream energyFile("dampings\\energy\\" + separatedFilename[3], std::fstream::app);
+		std::ofstream initpointFile("dampings\\init_point\\" + separatedFilename[4], std::fstream::app);
+
+		std::vector<Damping> dampings = BesselHelper::getDampingsFromBessels(besselsFromFile);
+
+		for (auto damping : dampings) {
+			angleFile << damping.six60MHz << " " << damping.two80MHz << " " << newName << std::endl;
+			energyFile << damping.six60MHz << " " << damping.two80MHz << " " << newName << std::endl;
+			initpointFile << damping.six60MHz << " " << damping.two80MHz << " " << newName << std::endl;
+		}
+
 		besselsFromFile.clear();
+		angleFile.close();
+		energyFile.close();
+		initpointFile.close();
 	}
 }
 

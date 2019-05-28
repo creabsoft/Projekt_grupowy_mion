@@ -8,7 +8,7 @@ class BesselHelper {
 public:
 	static Bessel getMaximumBessel(std::vector<Bessel> bessels);
 	static Damping calculateDampingFromBessel(Bessel bessel);
-	static void getDampingsFromBessels(std::vector<Bessel> bessels);
+	static std::vector<Damping> getDampingsFromBessels(std::vector<Bessel> bessels);
 	static std::pair<int, double> getMaximumFromMap(std::map<int, double> values);
 	static std::pair<int, double> getMaximumFromCompartment(std::map<int, int> indexes, std::map<int, double> & maximums, int compartment);
 	static int getNumberOfCompartment(std::map<int, int> indexes, int numOfIndex);
@@ -38,7 +38,7 @@ Damping BesselHelper::calculateDampingFromBessel(Bessel bessel) {
 	return Damping(bessel.six60MHz / bessel.before, bessel.two80Mhz / bessel.before);
 }
 
-void BesselHelper::getDampingsFromBessels(std::vector<Bessel> bessels) {
+std::vector<Damping> BesselHelper::getDampingsFromBessels(std::vector<Bessel> bessels) {
 	bool compartmentBefore = false;
 	bool compartmentSix60MHz = false;
 	bool compartmentTwo80MHz = false;
@@ -166,6 +166,8 @@ void BesselHelper::getDampingsFromBessels(std::vector<Bessel> bessels) {
 	for (auto it : maximumDampings) {
 		std::cout << it.six60MHz << " " << it.two80MHz << std::endl;
 	}
+
+	return maximumDampings;
 }
 
 std::pair<int, double> BesselHelper::getMaximumFromCompartment(std::map<int, int> indexes, std::map<int, double> & maximums, int compartment) {

@@ -156,6 +156,8 @@
   <ItemGroup>
     <ClInclude Include="Bessel.h" />
     <ClInclude Include="BesselHelper.h" />
+    <ClInclude Include="BesselName.h" />
+    <ClInclude Include="BesselNameHelper.h" />
     <ClInclude Include="Converter.h" />
     <ClInclude Include="Damping.h" />
     <ClInclude Include="FilesHelper.h" />
