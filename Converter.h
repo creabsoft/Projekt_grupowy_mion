@@ -173,7 +173,7 @@ void Converter::convertBesselToDamping(std::vector<std::string> pathToFiles, std
 		std::string newName = BesselNameHelper::getBesselNameForSelectedFile(besselsNames, separatedFilename[0]).newName;
 		separatedFilename.clear();
 		FilesHelper::splitFilenameByDelimiter(newName, '_', separatedFilename);
-		std::cout << "ANGLE: " << separatedFilename[2] << std::endl;
+		// std::cout << "ANGLE: " << separatedFilename[2] << std::endl;
 
 		std::ofstream angleFile("dampings\\angle\\" + separatedFilename[2], std::fstream::app);
 		std::ofstream energyFile("dampings\\energy\\" + separatedFilename[3], std::fstream::app);

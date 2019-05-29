@@ -60,7 +60,7 @@ std::vector<Damping> BesselHelper::getDampingsFromBessels(std::vector<Bessel> be
 	double maxTwo80MHz = -1;
 
 	for (int i = 0; i < bessels.size() - 1; i++) {
-		if (maxBefore == -1 && (bessels[i + 1].before - bessels[i].before) > 200) {
+		if (maxBefore == -1 && (bessels[i + 1].before - bessels[i].before) > 2000000) {
 			compartmentBefore = true;
 			maxBefore = bessels[i].before;
 		}
@@ -69,7 +69,7 @@ std::vector<Damping> BesselHelper::getDampingsFromBessels(std::vector<Bessel> be
 			maxBefore = -1;
 		}
 
-		if (maxSix60MHz == -1 && (bessels[i + 1].six60MHz - bessels[i].six60MHz) > 200) {
+		if (maxSix60MHz == -1 && (bessels[i + 1].six60MHz - bessels[i].six60MHz) > 2000000) {
 			compartmentSix60MHz = true;
 			maxSix60MHz = bessels[i].six60MHz;
 		}
@@ -78,7 +78,7 @@ std::vector<Damping> BesselHelper::getDampingsFromBessels(std::vector<Bessel> be
 			maxSix60MHz = -1;
 		}
 
-		if (maxTwo80MHz == -1 && (bessels[i + 1].two80Mhz - bessels[i].two80Mhz) > 200) {
+		if (maxTwo80MHz == -1 && (bessels[i + 1].two80Mhz - bessels[i].two80Mhz) > 2000000) {
 			compartmentTwo80MHz = true;
 			maxTwo80MHz = bessels[i].two80Mhz;
 		}
