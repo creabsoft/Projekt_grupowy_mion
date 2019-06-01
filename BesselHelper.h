@@ -100,7 +100,6 @@ std::vector<Damping> BesselHelper::getDampingsFromBessels(std::vector<Bessel> be
 				std::pair<int, double> tempMaxBefore = getMaximumFromMap(tempBefore);
 				maximumBefore[tempMaxBefore.first] = tempMaxBefore.second;
 				numOfCompartment++;
-//				maximumBessels[b++].before = maximumBefore.second;
 				tempBefore.clear();
 			}
 		}
@@ -116,7 +115,6 @@ std::vector<Damping> BesselHelper::getDampingsFromBessels(std::vector<Bessel> be
 			if (tempSix60MHz.size() > 0) {
 				std::pair<int, double> tempMaxSix60MHz = getMaximumFromMap(tempSix60MHz);
 				maximumSix60MHz[tempMaxSix60MHz.first] = tempMaxSix60MHz.second;
-				// maximumBessels[s++].six60MHz = maximumSix60MHz;
 				tempSix60MHz.clear();
 			}
 		}
@@ -132,19 +130,10 @@ std::vector<Damping> BesselHelper::getDampingsFromBessels(std::vector<Bessel> be
 			if (tempTwo80MHz.size() > 0) {
 				std::pair<int, double> tempMaxTwo80MHz = getMaximumFromMap(tempTwo80MHz);
 				maximumTwo80MHz[tempMaxTwo80MHz.first] = tempMaxTwo80MHz.second;
-//				maximumBessels[t++].two80Mhz = maximumTwo80MHz;
 				tempTwo80MHz.clear();
 			}
 		}
-	}
-
-	std::cout << maximumBefore.size() << std::endl;
-	std::cout << maximumSix60MHz.size() << std::endl;
-	std::cout << maximumTwo80MHz.size() << std::endl;
-	
-	//for (auto it : maximumTwo80MHz) {
-	//	std::cout << "MAXIMUM:" << it.second << std::endl;
-	//}
+	}	
 
 	for (auto it : maximumBefore) {
 		double beforeMax = it.second;
@@ -156,15 +145,8 @@ std::vector<Damping> BesselHelper::getDampingsFromBessels(std::vector<Bessel> be
 			Damping damping;
 			damping.six60MHz = maxSix60MHz.second / (double) beforeMax;
 			damping.two80MHz = maxTwo80MHz.second / (double) beforeMax;
-			std::cout << "BEFORE: " << it.first << " " << it.second << std::endl;
-			std::cout << "SIX60MHZ: " << maxSix60MHz.first << " " << maxSix60MHz.second << std::endl;
-			std::cout << "TWO80MHZ: " << maxTwo80MHz.first << " " << maxTwo80MHz.second << std::endl;
 			maximumDampings.push_back(damping);
 		}
-	}
-	std::cout << maximumDampings.size() << std::endl;
-	for (auto it : maximumDampings) {
-		std::cout << it.six60MHz << " " << it.two80MHz << std::endl;
 	}
 
 	return maximumDampings;

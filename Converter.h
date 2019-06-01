@@ -198,6 +198,7 @@ void Converter::generateHistogram(std::string filename, double rangeFrom, double
 	std::ifstream file(filename);
 
 	std::vector<Damping> dampings;
+	std::string trash;
 
 	if (file.is_open()) {
 		while (!file.eof()) {
@@ -206,6 +207,7 @@ void Converter::generateHistogram(std::string filename, double rangeFrom, double
 
 			file >> six60MHz;
 			file >> two80MHz;
+			file >> trash;
 			
 			dampings.push_back(Damping(six60MHz, two80MHz));
 		}
@@ -219,48 +221,4 @@ void Converter::generateHistogram(std::string filename, double rangeFrom, double
 	histogram.generateSimpleHistograms();
 	std::cout << "Successfully created histograms in files: histogramSix60MHz.txt and histogramTwo80MHz.txt (directory histograms)" << std::endl;
 	std::cout << "The csv files you can find in the histograms folder." << std::endl;
-}
-
-void Converter::convertFilesToCategories(std::vector<std::string> pathToFiles) {
-	int counter = 1;
-
-	if (fs::exists("categories")) {
-		fs::remove_all("categories");
-	}
-
-	fs::create_directory("categories");
-	fs::create_directory("categories\\angles");
-	fs::create_directory("categories\\energy");
-	fs::create_directory("categories\\init_point");
-
-	const int ANGLE_INDEX = 1;
-	const int ENP_INDEX = 2;
-	const int INITPOINT_INDEX = 3;
-
-	for (auto it : pathToFiles) {
-		std::cout << "File " << counter++ << " from " << pathToFiles.size() << std::endl;
-		std::vector<SingleBlock> blocksFromBinary = loader.getBlocksFromBinaryFile(it);
-		std::string filename = it.substr(it.find_last_of("\\") + 1);
-		std::vector<std::string> separatedFilename;
-		FilesHelper::splitFilenameByDelimiter(filename, '_', separatedFilename);
-
-		std::ifstream file(it);
-		std::ofstream angleFile("categories\\angles\\" + separatedFilename[ANGLE_INDEX], std::fstream::app);
-		std::ofstream enpFile("categories\\energy\\" + separatedFilename[ENP_INDEX], std::fstream::app);
-		std::ofstream initpointFile("categories\\init_point\\" + separatedFilename[INITPOINT_INDEX], std::fstream::app);
-		for (SingleBlock singleBlock : blocksFromBinary) {
-			angleFile << singleBlock.time << " " << singleBlock.before << " " << singleBlock.after << std::endl;
-			enpFile << singleBlock.time << " " << singleBlock.before << " " << singleBlock.after << std::endl;
-			initpointFile << singleBlock.time << " " << singleBlock.before << " " << singleBlock.after << std::endl;
-		}
-
-		angleFile << std::endl;
-		enpFile << std::endl;
-		initpointFile << std::endl;
-
-		file.close();
-		angleFile.close();
-		enpFile.close();
-		initpointFile.close();
-	}
 }
